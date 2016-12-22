@@ -11,7 +11,7 @@ import com.lukaspradel.steamapi.webapi.client.SteamWebApiClient;
 import com.lukaspradel.steamapi.webapi.request.*;
 import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactory;
 
-public class AFK {
+public class AFK{
     //my steam id: 76561197960442709
     
     public static void main(String[] args) throws SteamApiException {

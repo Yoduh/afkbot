@@ -1,5 +1,8 @@
 package afkbot;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.io.FileInputStream;
@@ -8,6 +11,8 @@ import java.io.InputStream;
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.TS3Config;
 import com.github.theholywaffle.teamspeak3.TS3Query;
+import com.github.theholywaffle.teamspeak3.TS3Query.FloodRate;
+import com.github.theholywaffle.teamspeak3.api.wrapper.Client;
 
 public class TSUsers {
     static public void main(String[] args) {
@@ -28,14 +33,37 @@ public class TSUsers {
         final TS3Api api = query.getApi();
         api.login(admin, pw);
         api.selectVirtualServerById(1);
-        api.setNickname("PutPutBot");
-        api.sendChannelMessage("PutPutBot is online!");
+        api.setNickname("AFKBot");
+        //api.sendChannelMessage("AFKBot is online and ready to kick ass!");
+        List<Client> clients = api.getClients();
+        ArrayList<Player> users = new ArrayList<Player>();
+        for(Client client : clients) {
+            Player user = new Player(client.getUniqueIdentifier(), client.getIp(), client.getNickname());
+            users.add(user);
+        }
+        for(Player user: users) {
+            System.out.println(user);
+        }
+        
+        /*
+        int x = 0;
+        try {
+            while (x < 3) {
+                api.sendChannelMessage("test " + x);
+                Thread.sleep(5 * 1000);
+                x++;
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
+        query.exit();
     }
     
     public static Properties getProp(Properties prop, InputStream input) {
         try {
             String filename = "config.properties";
-            input = AFK.class.getClassLoader().getResourceAsStream(filename);
+            input = TSUsers.class.getClassLoader().getResourceAsStream(filename);
             if(input == null){
                 System.out.println("Sorry, unable to find " + filename);
                 return null;
