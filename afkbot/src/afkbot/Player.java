@@ -9,11 +9,13 @@ public class Player {
     private String clientNick;
     private String ip;
     private String steamID;
+    private int chan;
     
-    public Player(String uniqueID, String ip, String name) {
+    public Player(String uniqueID, String ip, String name, int channel) {
         this.uniqueID = uniqueID;
         this.ip = ip;
         this.clientNick = name;
+        this.chan = channel;
         
         Properties prop = new Properties();
         InputStream input = null;
@@ -40,6 +42,10 @@ public class Player {
         return steamID;
     }
     
+    public int getChannel() {
+    	return chan;
+    }
+    
     public void setName(String name) {
         clientNick = name;
     }
@@ -52,9 +58,13 @@ public class Player {
         steamID = id;
     }
     
+    public void setChannel(int chan) {
+    	this.chan = chan;
+    }
+    
     public String toString() {
         return "unique ID: " + this.uniqueID + ", IP address: " + this.ip + ", Name: " + this.clientNick
-                + ", Steam ID: " + this.steamID;
+                + ", Steam ID: " + this.steamID + ", in channel: " + this.chan;
     }
     
     public String findSteamID(String uniqueID, String[] friendIDs) {
