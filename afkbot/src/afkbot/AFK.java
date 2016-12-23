@@ -29,11 +29,12 @@ public class AFK {
         String admin = prop.getProperty("login");
         String pw = prop.getProperty("password");
         
-        //create TS3 bot
+        //create TS3 bot and connect to TS3 with it
         final TS3Config config = new TS3Config();
         config.setHost(serverip);
         config.setDebugLevel(Level.ALL);
         final TS3Query query = new TS3Query(config);
+        query.connect();
         final TS3Api api = query.getApi();
         api.login(admin, pw);
         api.selectVirtualServerById(1);
@@ -41,28 +42,31 @@ public class AFK {
         
         //do the dew
         ArrayList<Player> users = new ArrayList<Player>();
-        
-        query.connect();
-        users = TSUsers(prop, users, query, api);
+        users = TSUsers(users, api);
+        System.out.println("BEFORE");
         for(Player user: users) {
         	System.out.println(user);
         }
         if(!users.equals("[]")) {	//no valid users if "[]"
         	users = steamUsers(prop, users);
         }
+    	System.out.println("AFTER");
+        for(Player user: users) {
+        	System.out.println(user);
+        }
         if(!users.equals("[]")) {	//no valid users if "[]"
-        	
+        	moveUsers(users, api);
         }
         query.exit();
 	}
 	
-    static public ArrayList<Player> TSUsers(Properties prop, ArrayList<Player> users, TS3Query query, TS3Api api) {
+    static public ArrayList<Player> TSUsers(ArrayList<Player> users, TS3Api api) {
         //api.sendChannelMessage("AFKBot is online and ready to kick ass!");
         List<Client> clients = api.getClients();
         Channel AFKchan = api.getChannelByNameExact("AFK", false);
         for(Client client : clients) {
         	if(client.getIp() != "" && client.getChannelId() != AFKchan.getId()) {	//don't care about users with no IP address (bot) or are already in AFK channel
-        		Player user = new Player(client.getUniqueIdentifier(), client.getIp(), client.getNickname(), client.getChannelId());
+        		Player user = new Player(client.getUniqueIdentifier(), client.getIp(), client.getNickname(), client.getChannelId(), client.getId());
         		users.add(user);
         	}
         }
@@ -137,6 +141,15 @@ public class AFK {
         }*/
     }
     
+    public static void moveUsers(ArrayList<Player> users, TS3Api api) {
+    	Channel AFKchan = api.getChannelByNameExact("AFK", false);
+    	System.out.println("hello");
+    	for(Player u: users) {
+    		System.out.println("moving: " + u.getName());
+    		api.moveClient(u.getClientID(), AFKchan.getId());
+    	}
+    }
+    
     public static Properties getProp(Properties prop, InputStream input) {
         try {
             String filename = "config.properties";
@@ -162,6 +175,5 @@ public class AFK {
         }
         return prop;
     }
+    
 }
-
-
