@@ -38,25 +38,24 @@ public class AFK {
         final TS3Api api = query.getApi();
         api.login(admin, pw);
         api.selectVirtualServerById(1);
-        api.setNickname("AFKBot");
+        api.setNickname("AFK Police");
         
         //do the dew
-        ArrayList<Player> users = new ArrayList<Player>();
-        users = TSUsers(users, api);
-        System.out.println("BEFORE");
-        for(Player user: users) {
-        	System.out.println(user);
-        }
-        if(!users.equals("[]")) {	//no valid users if "[]"
-        	users = steamUsers(prop, users);
-        }
-    	System.out.println("AFTER");
-        for(Player user: users) {
-        	System.out.println(user);
-        }
-        if(!users.equals("[]")) {	//no valid users if "[]"
-        	moveUsers(users, api);
-        }
+        try {
+	        while(true) {
+		        ArrayList<Player> users = new ArrayList<Player>();
+		        users = TSUsers(users, api);
+		        if(!users.equals("[]")) {	//no valid users if "[]"
+		        	users = steamUsers(prop, users);
+		        }
+		        if(!users.equals("[]")) {	//no valid users if "[]"
+		        	moveUsers(users, api);
+		        }
+		        Thread.sleep(300 * 1000);	//sleep 5 minutes then do it all again
+	        } 
+        } catch (InterruptedException e) {
+	        e.printStackTrace();
+	    }
         query.exit();
 	}
 	
@@ -134,19 +133,15 @@ public class AFK {
         }
         
         return users;
-        /*
-        System.out.println("after2:");
-        for(Player u: users) {
-        	System.out.println("player: " + u);
-        }*/
     }
     
     public static void moveUsers(ArrayList<Player> users, TS3Api api) {
     	Channel AFKchan = api.getChannelByNameExact("AFK", false);
-    	System.out.println("hello");
     	for(Player u: users) {
-    		System.out.println("moving: " + u.getName());
+    		Date d = new Date();
     		api.moveClient(u.getClientID(), AFKchan.getId());
+    		api.sendPrivateMessage(u.getClientID(), "ALERT: You were moved to the AFK channel after you were detected as idle on Steam. " + 
+    		"If you manually set yourself to \"Away\" on purpose, you'll need to undo that to not get moved again.");
     	}
     }
     
