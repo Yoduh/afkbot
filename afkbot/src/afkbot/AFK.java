@@ -2,7 +2,6 @@ package afkbot;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -60,7 +59,6 @@ public class AFK {
 	}
 	
     static public ArrayList<Player> TSUsers(ArrayList<Player> users, TS3Api api) {
-        //api.sendChannelMessage("AFKBot is online and ready to kick ass!");
         List<Client> clients = api.getClients();
         Channel AFKchan = api.getChannelByNameExact("AFK", false);
         for(Client client : clients) {
@@ -71,20 +69,6 @@ public class AFK {
         }
 
         return users;
-        
-        /*
-        int x = 0;
-        try {
-            while (x < 3) {
-                api.sendChannelMessage("test " + x);
-                Thread.sleep(5 * 1000);
-                x++;
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        */
-        //query.exit();
     }
 	
     public static ArrayList<Player> steamUsers(Properties prop, ArrayList<Player> users) throws SteamApiException {
@@ -128,7 +112,6 @@ public class AFK {
         				break;
         			}
         		}
-        		//System.out.println("remove " + player.getPersonaname());
         	}
         }
         
