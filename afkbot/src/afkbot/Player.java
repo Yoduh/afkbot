@@ -9,8 +9,10 @@ public class Player {
     private String clientNick;
     private String ip;
     private String steamID;
+    private String game;
     private int chan;
     private int clientID;
+    private int AFKstatus;
     
     public Player(String uniqueID, String ip, String name, int channel, int id) {
         this.uniqueID = uniqueID;
@@ -44,12 +46,20 @@ public class Player {
         return steamID;
     }
     
+    public String getGame() {
+    	return game;
+    }
+    
     public int getChannel() {
     	return chan;
     }
     
     public int getClientID() {
     	return clientID;
+    }
+    
+    public int getAFKstatus() {
+    	return AFKstatus;
     }
     
     public void setName(String name) {
@@ -72,9 +82,18 @@ public class Player {
     	this.clientID = id;
     }
     
+    public void setAFKstatus(int id) {
+    	this.AFKstatus = id;
+    }
+    
+    public void setGame(String game) {
+    	this.game = game;
+    }
+    
     public String toString() {
         return "unique ID: " + this.uniqueID + ", IP address: " + this.ip + ", Name: " + this.clientNick
-                + ", Steam ID: " + this.steamID + ", in channel: " + this.chan + ", client ID: " + this.clientID;
+                + ", Steam ID: " + this.steamID + ", in channel: " + this.chan + ", client ID: " + this.clientID
+                + ", game: " + this.game + ", AFK status: " + this.AFKstatus;
     }
     
     public String findSteamID(String uniqueID, String[] friendIDs) {
@@ -86,9 +105,9 @@ public class Player {
             return friendIDs[2];
         } else if (uniqueID.equals("DtylwbG/exGONmcPUH4zhW/qMBg=")) {   //Baconman
             return friendIDs[3];
-        }/* else if (uniqueID.equals("")) {   //Boo4
+        } else if (uniqueID.equals("57iTVDUxiF4MDIYPSh/WG0FYXxM=")) {   //Boo4
             return friendIDs[4];
-        } else if (uniqueID.equals("")) {   //Donwon
+        } /*else if (uniqueID.equals("")) {   //Donwon
             return friendIDs[5];
         } else if (uniqueID.equals("")) {   //Lamperkat
             return friendIDs[6];

@@ -2,8 +2,12 @@ package afkbot;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintStream;
 
 import com.github.theholywaffle.teamspeak3.TS3Api;
 import com.github.theholywaffle.teamspeak3.TS3Config;
@@ -18,8 +22,14 @@ import com.lukaspradel.steamapi.webapi.request.*;
 import com.lukaspradel.steamapi.webapi.request.builders.SteamWebApiRequestFactory;
 
 public class AFK {
-
-	static public void main(String[] args) throws SteamApiException {
+	
+	/**
+	 * Main method. Sets up connection info for TS3 and runs all the things.
+	 * @param args command line arguments (not used)
+	 * @throws SteamApiException if Steam API messes up
+	 * @throws IOException if logging functionality is enabled and messes up
+	 */
+	static public void main(String[] args) throws SteamApiException, IOException {
 		//grab config.properties values
 		Properties prop = new Properties();
         InputStream input = null;
@@ -44,10 +54,11 @@ public class AFK {
 	        while(true) {
 		        ArrayList<Player> users = new ArrayList<Player>();
 		        users = TSUsers(users, api);
-		        if(!users.equals("[]")) {	//no valid users if "[]"
+		        if(users.size() > 0) {
 		        	users = steamUsers(prop, users);
 		        }
-		        if(!users.equals("[]")) {	//no valid users if "[]"
+		        System.out.println(users);
+		        if(users.size() > 0) {
 		        	moveUsers(users, api);
 		        }
 		        Thread.sleep(300 * 1000);	//sleep 5 minutes then do it all again
@@ -58,6 +69,12 @@ public class AFK {
         query.exit();
 	}
 	
+	/**
+	 * Gets a list of everyone connected to the TS3 server that isn't already in the AFK channel.
+	 * @param users Initial blank list of users logged on the TS3 server
+	 * @param api TS3 API object
+	 * @return List of users logged on TS3
+	 */
     static public ArrayList<Player> TSUsers(ArrayList<Player> users, TS3Api api) {
         List<Client> clients = api.getClients();
         Channel AFKchan = api.getChannelByNameExact("AFK", false);
@@ -71,6 +88,13 @@ public class AFK {
         return users;
     }
 	
+    /**
+     * Gets a list of all friends from my steam friend list that are also on TS3 and uses their current steam status to determine if they are AFK or not.
+     * @param prop Property object for getting sensitive information from config.properties that I don't want published online
+     * @param users List of everyone logged on the TS3 server
+     * @return Same list of users logged on TS3 minus the same users on steam that are NOT away or snoozing
+     * @throws SteamApiException if Steam API messes up
+     */
     public static ArrayList<Player> steamUsers(Properties prop, ArrayList<Player> users) throws SteamApiException {
         String mykey = prop.getProperty("steamkey");
         String myid = prop.getProperty("mysteamid");
@@ -104,30 +128,53 @@ public class AFK {
         
         GetPlayerSummariesRequest r = SteamWebApiRequestFactory.createGetPlayerSummariesRequest(steamIDs);
         GetPlayerSummaries sums = client.<GetPlayerSummaries> processRequest(r);
+        System.out.println("status of all players on TS not in AFK channel:");
         for( com.lukaspradel.steamapi.data.json.playersummaries.Player player : sums.getResponse().getPlayers()) {
-        	if(player.getPersonastate() != 2 && player.getPersonastate() != 3 && player.getPersonastate() != 0) {
         		for(Player u: users) {
         			if(u.getSteamID() != null && u.getSteamID().equals(player.getSteamid())) {
-        				users.remove(u);
-        				break;
+        				u.setAFKstatus(player.getPersonastate());
+        				u.setGame((String) player.getAdditionalProperties().get("gameextrainfo"));
+        				System.out.println(u);
+        				if((u.getAFKstatus() != 3 || (u.getGame() != null && u.getGame().equals("Rocket League"))) && u.getAFKstatus() != 4) {	//steam statuses that require moving to AFK channel
+	        				users.remove(u);																		//Rocket League requires special rule (might go AFK with controller when you're not)
+	        				break;
+        				}
         			}
         		}
-        	}
         }
         
         return users;
     }
     
-    public static void moveUsers(ArrayList<Player> users, TS3Api api) {
+    /**
+     * Takes list of users to be moved and moves them to AFK channel. Logging functionality and private messaging
+     *  on move can be commented or not to enable/disable that functionality.
+     * @param users Users to be moved to AFK channel
+     * @param api TS3 API object
+     * @throws IOException if logging functionality can't find log.txt
+     */
+    public static void moveUsers(ArrayList<Player> users, TS3Api api) throws IOException {
+    	//FileWriter output = new FileWriter(new File("log.txt"), true);
+    	//Date d = new Date();
+    	//String line = System.getProperty("line.separator");
     	Channel AFKchan = api.getChannelByNameExact("AFK", false);
+    	//output.write(line + line + "Begin log: <" + d + ">" + line);
+		//output.write("Users being moved:" + line);
     	for(Player u: users) {
-    		Date d = new Date();
+    		//output.write(u + "" + line);
     		api.moveClient(u.getClientID(), AFKchan.getId());
-    		api.sendPrivateMessage(u.getClientID(), "ALERT: You were moved to the AFK channel after you were detected as idle on Steam. " + 
-    		"If you manually set yourself to \"Away\" on purpose, you'll need to undo that to not get moved again.");
+    		//api.sendPrivateMessage(u.getClientID(), "ALERT: You were moved to the AFK channel after you were detected as idle on Steam. " + 
+    		//"If you manually set yourself to \"Away\" on purpose, you'll need to undo that to not get moved again.");
     	}
+    	//output.close();
     }
     
+    /**
+     * In charge of returning sensitive information from config.properties file
+     * @param prop Properties object
+     * @param input Initially blank input object for reading from config.properties
+     * @return Whatever the requested property from config.properites was
+     */
     public static Properties getProp(Properties prop, InputStream input) {
         try {
             String filename = "config.properties";
