@@ -13,6 +13,7 @@ public class Player {
     private int chan;
     private int clientID;
     private int AFKstatus;
+    private int awayTime;
     
     public Player(String uniqueID, String ip, String name, int channel, int id) {
         this.uniqueID = uniqueID;
@@ -20,6 +21,7 @@ public class Player {
         this.clientNick = name;
         this.chan = channel;
         this.clientID = id;
+        awayTime = 0;
         
         Properties prop = new Properties();
         InputStream input = null;
@@ -62,6 +64,10 @@ public class Player {
     	return AFKstatus;
     }
     
+    public int getAwayTime() {
+    	return awayTime;
+    }
+    
     public void setName(String name) {
         clientNick = name;
     }
@@ -83,7 +89,12 @@ public class Player {
     }
     
     public void setAFKstatus(int id) {
-    	this.AFKstatus = id;
+    	AFKstatus = id;
+    	if(AFKstatus != 3 && AFKstatus != 4) {
+    		awayTime = 0;
+    	} else {
+    		awayTime++;
+    	}
     }
     
     public void setGame(String game) {
@@ -91,9 +102,9 @@ public class Player {
     }
     
     public String toString() {
-        return "unique ID: " + this.uniqueID + ", IP address: " + this.ip + ", Name: " + this.clientNick
+        return "Name: " + this.clientNick + ", unique ID: " + this.uniqueID + ", IP address: " + this.ip
                 + ", Steam ID: " + this.steamID + ", in channel: " + this.chan + ", client ID: " + this.clientID
-                + ", game: " + this.game + ", AFK status: " + this.AFKstatus;
+                + ", game: " + this.game + ", AFK status: " + this.AFKstatus + ", AFK timer: " + this.awayTime + "m";
     }
     
     public String findSteamID(String uniqueID, String[] friendIDs) {
