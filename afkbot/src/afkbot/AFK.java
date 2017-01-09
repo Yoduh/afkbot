@@ -58,7 +58,7 @@ public class AFK {
 		        	users = steamUsers(prop, users);
 		        }
 		        if(users.size() > 0) {
-		        	moveUsers(users, api);
+		        	//moveUsers(users, api);
 		        }
 		        Thread.sleep(60 * 1000);	// Sleep 5 minutes then do it all again
 	        } 
@@ -84,12 +84,13 @@ public class AFK {
 	        		for(Player u: users) {	// Check if user already exists in list. If so, skip.  Only create new users
 	        			if(u.getID().equals(client.getUniqueIdentifier())) {
 	        				exists = 1;
+	        				u.setIdleTime(client.getIdleTime()); // update existing user's TS reported idle time
 	        				break;
 	        			}
 	        		}
         		}
         		if(exists == 0) {
-        			Player user = new Player(client.getUniqueIdentifier(), client.getIp(), client.getNickname(), client.getChannelId(), client.getId());
+        			Player user = new Player(client.getUniqueIdentifier(), client.getIp(), client.getNickname(), client.getChannelId(), client.getId(), client.getIdleTime());
         			users.add(user);
         		}
         	}
@@ -163,14 +164,13 @@ public class AFK {
     				u.setAFKstatus(player.getPersonastate());
     				u.setGame((String) player.getAdditionalProperties().get("gameextrainfo"));
     				System.out.println(u);
-    				if((u.getAFKstatus() != 3 || (u.getGame() != null && u.getGame().equals("Rocket League"))) && u.getAFKstatus() != 4) {	// Steam statuses that require moving to AFK channel
+    				if((u.getTSidleTime() < 600 || u.getAFKstatus() != 3 || (u.getGame() != null && u.getGame().equals("Rocket League"))) && u.getAFKstatus() != 4) {	// Steam statuses that require moving to AFK channel
         				users.remove(u);																		// Rocket League requires special rule (might go AFK with controller when you're not)
         				break;
     				}
     			}
     		}
         }
-        
         return users;
     }
     

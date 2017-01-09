@@ -1,5 +1,7 @@
-steamkey=null
-mysteamid=null
-serverip=null
-login=null
-password=null
+steamkey=<my steam key>
+mysteamid=<my steam id>
+myTSid=<my unique TS id>
+serverip=<TS IP address>
+login=<TS query login name>
+password=<TS query pw>
+friendIDs = <comma separated list of Steam IDs>

@@ -14,14 +14,16 @@ public class Player {
     private int clientID;
     private int AFKstatus;
     private int awayTime;
+    private long TSidleTime;
     
-    public Player(String uniqueID, String ip, String name, int channel, int id) {
+    public Player(String uniqueID, String ip, String name, int channel, int id, long idle) {
         this.uniqueID = uniqueID;
         this.ip = ip;
         this.clientNick = name;
         this.chan = channel;
         this.clientID = id;
         awayTime = 0;
+        this.TSidleTime = idle / 1000;
         
         Properties prop = new Properties();
         InputStream input = null;
@@ -68,6 +70,10 @@ public class Player {
     	return awayTime;
     }
     
+    public long getTSidleTime() {
+    	return TSidleTime;
+    }
+    
     public void setName(String name) {
         clientNick = name;
     }
@@ -101,10 +107,15 @@ public class Player {
     	this.game = game;
     }
     
+    public void setIdleTime(long time) {
+    	this.TSidleTime = time / 1000;
+    }
+    
     public String toString() {
         return "Name: " + this.clientNick + ", unique ID: " + this.uniqueID + ", IP address: " + this.ip
                 + ", Steam ID: " + this.steamID + ", in channel: " + this.chan + ", client ID: " + this.clientID
-                + ", game: " + this.game + ", AFK status: " + this.AFKstatus + ", AFK timer: " + this.awayTime + "m";
+                + ", game: " + this.game + ", TS idle time: " + this.TSidleTime + ", AFK status: " + this.AFKstatus 
+                + ", AFK timer: " + this.awayTime + "m";
     }
     
     public String findSteamID(String uniqueID, String[] friendIDs) {
@@ -118,11 +129,13 @@ public class Player {
             return friendIDs[3];
         } else if (uniqueID.equals("57iTVDUxiF4MDIYPSh/WG0FYXxM=")) {   //Boo4
             return friendIDs[4];
-        } /*else if (uniqueID.equals("")) {   //Donwon
+        } else if (uniqueID.equals("oRst0MWRnV08gZUnyA3hjxSTShc=")) {   //Donwon
             return friendIDs[5];
-        } else if (uniqueID.equals("")) {   //Lamperkat
+        } else if (uniqueID.equals("LVdaLG2JY5vmXpW8a0LDwJ2I13Y=")) {   //Lamperkat
             return friendIDs[6];
-        }*/
+        } else if (uniqueID.equals("hkbwUSBfVKer2Cxg8gGNWQ+anig=")) {   //Kingmonkey
+            return friendIDs[7];
+        }
         return null;
     }
     
