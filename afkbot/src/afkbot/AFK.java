@@ -58,7 +58,7 @@ public class AFK {
 		        	users = steamUsers(prop, users);
 		        }
 		        if(users.size() > 0) {
-		        	//moveUsers(users, api);
+		        	moveUsers(users, api);
 		        }
 		        Thread.sleep(60 * 1000);	// Sleep 5 minutes then do it all again
 	        } 
