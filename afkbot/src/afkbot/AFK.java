@@ -171,6 +171,10 @@ public class AFK {
     			}
     		}
         }
+        System.out.println("AFKers:");
+        for(Player u: users) {
+        	System.out.println(u);
+        }
         return users;
     }
     
