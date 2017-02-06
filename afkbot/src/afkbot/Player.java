@@ -135,7 +135,12 @@ public class Player {
             return friendIDs[6];
         } else if (uniqueID.equals("hkbwUSBfVKer2Cxg8gGNWQ+anig=")) {   //Kingmonkey
             return friendIDs[7];
+        } else if (uniqueID.equals("urJmZ5TxujqWkNweAgX22KJV+gc=")) {   //Slippy
+            return friendIDs[8];
+        } else if (uniqueID.equals("vjuX2Z0wFyqUha8W1haAq05v1m8=")) {   //Jarra
+            return friendIDs[8];
         }
+        		
         return null;
     }
     
